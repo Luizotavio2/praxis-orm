@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clients Client[]
+
+  @@index([email])
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
+  note      String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  services Service[]
+
+  @@index([userId])
+  @@index([name])
+  @@index([createdAt])
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  description String   @db.VarChar(500)
+  price       Decimal  @db.Decimal(10, 2)
+  serviceDate DateTime
+  status      String   @default("pending") @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clientId Int
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([serviceDate])
+  @@index([clientId, status])
+  @@index([clientId, serviceDate])
+}
