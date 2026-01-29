@@ -11,8 +11,10 @@ const app = express();
 // Middlewares
 // Configurar CORS: em produção usa FRONTEND_URL, em desenvolvimento permite todas as origens
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const frontendOrigin = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+
 app.use(cors({
-  origin: isDevelopment ? '*' : (process.env.FRONTEND_URL || 'http://localhost:3000'),
+  origin: isDevelopment ? '*' : frontendOrigin,
   credentials: true,
   optionsSuccessStatus: 200
 }));
